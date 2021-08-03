@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./styles/style.css" />
+    <style>
+      .searchBox {
+        width: 30vw;
+        min-width: 250px;
+        margin: 20px 10px auto auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      input {
+        width: 350px;
+        padding: 10px;
+        border-radius: 15px;
+        outline: none;
+        border: 2px solid rgb(133, 238, 133);
+      }
+      .input {
+        z-index: 1;
+      }
+      #food {
+        position: absolute;
+        padding: 35px 10px 0px;
+        width: 350px;
+        max-height: 300px;
+        border-radius: 24px;
+        border: 2px solid rgb(133, 238, 133);
+        border-top: none;
+        visibility: hidden;
+        overflow-y: scroll;
+      }
+      #food::-webkit-scrollbar {
+        width: 6px;
+        border-radius: 3px;
+      }
+      #food::-webkit-scrollbar-thumb {
+        background-color: rgb(133, 238, 133);
+        border-radius: 10px;
+      }
+      #food div {
+        display: flex;
+        border-top: 1px solid rgb(82, 111, 82);
+        justify-content: space-between;
+        padding: 10px 5px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      #food div:hover {
+        background-color: rgb(82, 111, 82);
+      }
+      #loading {
+        position: absolute;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        margin-top: 5px;
+        margin-left: -31px;
+        visibility: hidden;
+      }
+      #selectedFood {
+        width: 70vw;
+      }
+      #selectedFood img {
+        float: left;
+        width: 40%;
+        margin: auto 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="nav"></div>
+
+    <div class="searchBox">
+      <div class="input">
+        <input
+          oninput="throttleFn()"
+          type="text"
+          id="query"
+          placeholder="Search"
+        />
+        <img src="./img/Spinner-1.gif" id="loading" />
+      </div>
+      <div id="food"></div>
+    </div>
+
+    <div id="selectedFood"></div>
+  </body>
+</html>
+<script type="module">
+  import navbar from "./components/navbar.js";
+  document.querySelector(".nav").innerHTML = navbar();
+</script>
+<script>
+  let food_div = document.getElementById("food");
+  let loading = document.getElementById("loading");
+
+  let timerId;
+
+  function throttleFn() {
+    loading.style.visibility = "visible";
+    // If timeout is already set, then do not make req.
+    if (timerId) {
+      return false;
+    }
+
+    timerId = setTimeout(() => {
+      loading.style.visibility = "hidden";
+      main();
+      timerId = undefined; //After completing timeOut, id will be undefined, which will make above If condition false and allow to set new Timeout
+    }, 1000);
+  }
+
+  async function main() {
+    let query = document.getElementById("query").value;
+    if (query.length > 0) {
+      food_div.innerHTML = null;
+      food_div.style.visibility = "visible";
+      let food = await searchfood(); // Returned array will be a promise;
+      appendfood(food); // Add results to the div;
+    } else {
+      food_div.style.visibility = "hidden";
+    }
+  }
+
+  async function searchfood() {
+    let query = document.getElementById("query").value;
+
+    let res = await fetch(
+      `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`
+    );
+    let data = await res.json();
+    console.log("data:", data.meals);
+    return data.meals; //returning food result array;
+  }
+  function appendfood(d) {
+    if (d == null) {
+      let p_error = document.createElement("p");
+      p_error.innerHTML = "No Match Found";
+      p_error.style.fontSize = "30px";
+      p_error.style.textAlign = "center";
+      food_div.append(p_error);
+    } else {
+      d.forEach((el) => {
+        let div = document.createElement("div");
+        div.addEventListener("click", () => {
+          charDetails(el);
+        });
+
+        let p_name = document.createElement("span");
+        p_name.innerHTML = el.strMeal;
+
+        let p_gender = document.createElement("span");
+        p_gender.innerHTML = el.strCategory;
+
+        div.append(p_name, p_gender);
+
+        food_div.append(div);
+      });
+    }
+  }
+
+  let charDetails = ({ strMeal, strMealThumb, strArea, strCategory }) => {
+    let selectedFood = document.getElementById("selectedFood");
+    selectedFood.innerHTML = null;
+
+    let img = document.createElement("img");
+    img.src = strMealThumb;
+
+    let h3 = document.createElement("h3");
+    h3.innerText = strMeal;
+
+    let p1 = document.createElement("p");
+    p1.innerText = strArea;
+
+    let p2 = document.createElement("p");
+    p2.innerText = strCategory;
+
+    selectedFood.append(img, h3, p1, p2);
+  };
+</script>
