@@ -8,9 +8,7 @@ function navbar() {
         <h3><a href="#">Register</a></h3>
         <h3><a href="#">Login</a></h3>
       </div>
-    </div>
-    
-    <div id="data"></div>`;
+    </div>`;
 }
 
 export default navbar;

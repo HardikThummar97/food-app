@@ -66,11 +66,14 @@
       }
       #selectedFood {
         width: 70vw;
+        font-weight: bold;
+        float: left;
       }
       #selectedFood img {
         float: left;
         width: 40%;
         margin: auto 50px;
+        box-shadow: 0 0 2px 5px rgba(0, 0, 0, 0.05);
       }
     </style>
   </head>
@@ -100,6 +103,7 @@
 <script>
   let food_div = document.getElementById("food");
   let loading = document.getElementById("loading");
+  let selectedFood = document.getElementById("selectedFood");
 
   let timerId;
 
@@ -125,6 +129,7 @@
       let food = await searchfood(); // Returned array will be a promise;
       appendfood(food); // Add results to the div;
     } else {
+      selectedFood.innerHTML = null;
       food_div.style.visibility = "hidden";
     }
   }
@@ -136,7 +141,7 @@
       `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`
     );
     let data = await res.json();
-    console.log("data:", data.meals);
+    // console.log("data:", data.meals);
     return data.meals; //returning food result array;
   }
   function appendfood(d) {
@@ -167,7 +172,6 @@
   }
 
   let charDetails = ({ strMeal, strMealThumb, strArea, strCategory }) => {
-    let selectedFood = document.getElementById("selectedFood");
     selectedFood.innerHTML = null;
 
     let img = document.createElement("img");
