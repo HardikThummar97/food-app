@@ -14,12 +14,16 @@
         flex-direction: column;
         letter-spacing: 3px;
         line-height: 35px;
-        text-align: center;
+        /* text-align: center; */
       }
       #data img {
-        width: 80%;
-        height: 500px;
-        margin: 0 auto;
+        width: 40%;
+        height: 400px;
+        margin: 10px 20px;
+        float: left;
+      }
+      #data div {
+        border-bottom: 1px solid darkgrey;
       }
       #data a:hover {
         color: blue;
@@ -37,34 +41,37 @@
   import { getData } from "./scripts/showData.js";
   document.querySelector(".nav").innerHTML = navbar();
 
-  let response = getData("https://www.themealdb.com/api/json/v1/1/random.php");
+  let response = getData(
+    "https://www.themealdb.com/api/json/v1/1/search.php?f=a"
+  );
 
+  console.log("response:", response);
   response.then((data) => {
-    console.log("data:", data.meals[0]);
-    let meal = data.meals[0];
+    let meals = data.meals;
+    console.log("meals:", meals);
 
     let data_div = document.getElementById("data");
 
-    let name = document.createElement("h1");
-    name.innerText = meal.strMeal;
+    meals.forEach((meal) => {
+      let meal_div = document.createElement("div");
 
-    let img = document.createElement("img");
-    img.src = meal.strMealThumb;
+      let name = document.createElement("h1");
+      name.innerText = meal.strMeal;
 
-    let category = document.createElement("h4");
-    category.innerText = `Area/Type: ${meal.strArea} || ${meal.strCategory}`;
+      let img = document.createElement("img");
+      img.src = meal.strMealThumb;
 
-    let link = document.createElement("a");
-    console.log("link:", link);
-    link.innerHTML = `Get more detail at:<br/> ${meal.strSource}`;
-    link.href = `${meal.strSource}`;
+      let category = document.createElement("h4");
+      category.innerText = `Area/Type: ${meal.strArea} || ${meal.strCategory}`;
 
-    let head = document.createElement("h2");
-    head.innerText = "Recipe:";
+      let link = document.createElement("a");
+      console.log("link:", link);
+      link.innerHTML = `Get more detail at:<br/> ${meal.strSource}`;
+      link.href = `${meal.strSource}`;
 
-    let recipe = document.createElement("h3");
-    recipe.innerHTML = `${meal.strInstructions}`;
+      meal_div.append(img, name, category, link);
 
-    data_div.append(name, img, category, head, recipe, link);
+      data_div.append(meal_div);
+    });
   });
 </script>

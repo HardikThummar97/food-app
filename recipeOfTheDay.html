@@ -40,7 +40,7 @@
   let response = getData("https://www.themealdb.com/api/json/v1/1/random.php");
 
   response.then((data) => {
-    console.log("data:", data.meals[0]);
+    // console.log("data:", data.meals[0]);
     let meal = data.meals[0];
 
     let data_div = document.getElementById("data");
@@ -55,7 +55,7 @@
     category.innerText = `Area/Type: ${meal.strArea} || ${meal.strCategory}`;
 
     let link = document.createElement("a");
-    console.log("link:", link);
+    // console.log("link:", link);
     link.innerHTML = `Get more detail at:<br/> ${meal.strSource}`;
     link.href = `${meal.strSource}`;
 
